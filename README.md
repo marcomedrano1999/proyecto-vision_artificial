@@ -7,10 +7,12 @@ El presente repositorio forma parte del proyecto de final de semestre de la mate
 
 - [Comenzando](#comenzando)
 - [Pre-requisitos](#pre-requisitos)
-- [Instalación](#instalacion)
-- [Ejecucion de pruebas](#ejecucion-de-pruebas)
-
-
+- [Instalación](#instalación)
+- [Ejecución de pruebas](#ejecución-de-pruebas)
+- [Documentación](#documentación)
+- [Autores](#autores)
+- [Licencia](#licencia)
+- [Agradecimientos](#agradecimientos)
 
 ## Comenzando
 
@@ -48,11 +50,11 @@ Luego se debe activar el entorno con:
 
 Con esto se tendrán los modulos necesarios para la ejecución del proyecto. 
 
-## Ejecucion de pruebas
+## Ejecución de pruebas
 
 Por el momento las pruebas no han sido desarrolladas
 
-## Wiki
+## Documentación
 
 Puedes encontrar mucho más de cómo utilizar este proyecto en nuestra [Wiki](https://github.com/marcomedrano1999/proyecto-vision_artificial/wiki)
 
@@ -69,7 +71,7 @@ Los integrantes del equipo son:
 
 Este proyecto está bajo la Licencia MIT License - mira el archivo [LICENSE.md](LICENSE.md) para detalles
 
-## Expresiones de Gratitud 🎁
+## Agradecimientos
 
 * Agradecemos a ...
 * etc.
