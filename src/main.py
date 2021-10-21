@@ -93,6 +93,7 @@ with mp_hands.Hands(
                         pyautogui.middleClick()
                         bclick = True
                     # bclick=True
+
                 if (distancia_medio >= 60):
                     if (bclick == True):
                         bclick = False
