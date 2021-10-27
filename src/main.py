@@ -8,6 +8,7 @@ mp_hands = mp.solutions.hands
 
 cap = cv2.VideoCapture(0)
 
+
 color_pointer = (255,255,255)
 ANCHO_P=1920
 ALTO_P=1080
