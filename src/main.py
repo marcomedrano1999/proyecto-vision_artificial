@@ -87,12 +87,16 @@ with mp_hands.Hands(
                 yclick_derecho = ybase - yanular
                 xclick_menique = xbase - xmenique
                 yclick_menique = ybase - ymenique
+                xclick_anualar = xbase - xanular
+                yclick_anular = ybase - yanular
+
 
 
                 distancia_izquierdo= int((xclick**2 + yclick**2)**(1/2))
                 distancia_medio = int((xclick_medio ** 2 + yclick_medio ** 2) ** (1 / 2))
                 distancia_derecho = int((xclick_derecho ** 2 + yclick_derecho ** 2) ** (1 / 2))
                 distancia_menique = int((xclick_menique ** 2 + yclick_menique ** 2)** (1 / 2))
+                distancia_anular = int((xclick_anualar ** 2 + yclick_anular ** 2)** (1 / 2))
                 
                 # The right hand will have the mouse options
                 if(type_hand == 'Right'):
@@ -126,7 +130,7 @@ with mp_hands.Hands(
                             bclick = False
                     if (distancia_menique<=50):
                         if (bclick == False):
-                            print("Click")
+                            print("Arrastrar")
                             pyautogui.mouseDown()
                             pyautogui.moveTo(xclick_menique, yclick_menique)    
                             bclick = True
