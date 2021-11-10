@@ -4,11 +4,20 @@ import numpy as np
 import pyautogui
 from google.protobuf.json_format import MessageToDict
 from datetime import datetime
+import os
+from os import path
 import time
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
+
+# Set folder name for screenshots
+folder = "./images"
+
+# Check if the folder containing the images exits. If not, create it
+if(not path.isdir(folder)):
+    os.mkdir(folder)
 
 cap = cv2.VideoCapture(0)
 
@@ -183,12 +192,16 @@ with mp_hands.Hands(
                     #   image will be save in Images folder, under the present
                     #   hour time name
                     if (distancia_medio<=20):
+                       if (bclick == False):
                             print("Screenshot")
                             now = datetime.now()
                             print(now.strftime("%d-%m-%Y_%H-%M-%S"))
-                            pyautogui.screenshot("./images/"+now.strftime("%d-%m-%Y_%H-%M-%S")+".png")
-                            time.sleep(0.5)
-
+                            image_name = folder+"/"+now.strftime("%d-%m-%Y_%H-%M-%S")+".png"
+                            pyautogui.screenshot(image_name)
+                            bclick = True
+                    if (distancia_medio>=60):
+                        if (bclick == True):
+                            bclick = False
         cv2.imshow('Frame2', output)
         if cv2.waitKey(1) & 0xFF == 27:
             break
