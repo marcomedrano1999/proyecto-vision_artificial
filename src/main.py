@@ -63,7 +63,7 @@ with mp_hands.Hands(
                 if(certainty_score<0.9):
                     continue
 
-                    #MEDICION DE LOS PUNTOS DE LAS MANOS
+                #MEDICION DE LOS PUNTOS DE LAS MANOS
                 xmano = int(hand_landmarks.landmark[0].x * width)
                 ymano = int(hand_landmarks.landmark[0].y * height)
                 xbase = int(hand_landmarks.landmark[4].x * width)
@@ -106,33 +106,32 @@ with mp_hands.Hands(
                     if(distancia_izquierdo>=60):
                         if(bclick==True):
                             bclick=False
-                    if (distancia_derecho <= 50):
+                    if (distancia_derecho<=50):
                         if (bclick == False):
                             print("Click")
                             pyautogui.rightClick()
                             bclick = True
                         # bclick=True
-                    if (distancia_derecho >= 60):
+                    if (distancia_derecho>=60):
                         if (bclick == True):
                             bclick = False
-                    if (distancia_medio <= 50):
+                    if (distancia_medio<=50):
                         if (bclick == False):
                             print("Click")
                             pyautogui.middleClick()
                             bclick = True
                         # bclick=True
-                    if (distancia_medio >= 60):
+                    if (distancia_medio>=60):
                         if (bclick == True):
                             bclick = False
-
-                    if (distancia_menique <= 50):
+                    if (distancia_menique<=50):
                         if (bclick == False):
                             print("Click")
                             pyautogui.mouseDown()
                             pyautogui.moveTo(xclick_menique, yclick_menique)    
                             bclick = True
                         # bclick=True
-                    if (distancia_menique >= 60):
+                    if (distancia_menique>=60):
                         if (bclick == True):
                             pyautogui.mouseUp()
                             bclick = False
@@ -147,8 +146,6 @@ with mp_hands.Hands(
                     pyautogui.moveTo(int(xp),int(yp))
                     cv2.circle(output,(xmano_ant, ymano_ant),10,color_pointer,-1)
 
-
-#OTRA FUNCION CON DEDO MEÑIQUE
                 # The left hand will be able to set audio, brightness, etc
                 else:
                     # Volume up
@@ -161,25 +158,32 @@ with mp_hands.Hands(
                         if(bclick==True):
                             bclick=False
                     # Volume down
-                    if (distancia_derecho <= 50):
+                    if (distancia_derecho<=50):
                         if (bclick == False):
                             print("Volume down")
                             pyautogui.press("volumedown")
                             bclick = True
-                    if (distancia_derecho >= 60):
+                    if (distancia_derecho>=60):
+                        if (bclick == True):
+                            bclick = False
+                    #Texto rápido
+                    if (distancia_menique<=50):
+                        if (bclick == False):
+                            print("Texto")
+                            pyautogui.typewrite("No puedo contestar por el momento, te marco cuanto me desocupe")
+                            bclick = True
+                    if (distancia_menique>=60):
                         if (bclick == True):
                             bclick = False
                     # Screenshot
                     #   image will be save in Images folder, under the present
                     #   hour time name
-                    if (distancia_medio <= 20):
+                    if (distancia_medio<=20):
                             print("Screenshot")
                             now = datetime.now()
                             print(now.strftime("%d-%m-%Y_%H-%M-%S"))
                             pyautogui.screenshot("./images/"+now.strftime("%d-%m-%Y_%H-%M-%S")+".png")
                             time.sleep(0.5)
-
-
 
         cv2.imshow('Frame2', output)
         if cv2.waitKey(1) & 0xFF == 27:
