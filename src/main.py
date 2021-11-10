@@ -63,6 +63,7 @@ with mp_hands.Hands(
                 if(certainty_score<0.9):
                     continue
 
+                    #MEDICION DE LOS PUNTOS DE LAS MANOS
                 xmano = int(hand_landmarks.landmark[0].x * width)
                 ymano = int(hand_landmarks.landmark[0].y * height)
                 xbase = int(hand_landmarks.landmark[4].x * width)
@@ -77,20 +78,25 @@ with mp_hands.Hands(
                 xmenique = int(hand_landmarks.landmark[20].x * width)
                 ymenique = int(hand_landmarks.landmark[20].y * height)
 
+                #MEDICIONES ENTRE BASE Y DEDO
                 xclick = xbase-xindice
                 yclick = ybase-yindice
                 xclick_medio = xbase - xmedio
                 yclick_medio = ybase - ymedio
                 xclick_derecho = xbase - xanular
                 yclick_derecho = ybase - yanular
+                xclick_menique = xbase - xmenique
+                yclick_menique = ybase - ymenique
 
 
                 distancia_izquierdo= int((xclick**2 + yclick**2)**(1/2))
                 distancia_medio = int((xclick_medio ** 2 + yclick_medio ** 2) ** (1 / 2))
                 distancia_derecho = int((xclick_derecho ** 2 + yclick_derecho ** 2) ** (1 / 2))
+                distancia_menique = int((xclick_menique ** 2 + yclick_menique ** 2)** (1 / 2))
                 
                 # The right hand will have the mouse options
                 if(type_hand == 'right'):
+                    #CLICK IZQUIERDO
                     if(distancia_izquierdo<=50):
                         if(bclick==False):
                             print("Click")
@@ -115,13 +121,19 @@ with mp_hands.Hands(
                             pyautogui.middleClick()
                             bclick = True
                         # bclick=True
-
                     if (distancia_medio >= 60):
                         if (bclick == True):
                             bclick = False
 
-
-
+                    if (distancia_menique <= 50):
+                        if (bclick == False):
+                            print("Click")
+                            pyautogui.dragTo(500, 400, duration=0.3)
+                            bclick = True
+                        # bclick=True
+                    if (distancia_menique >= 60):
+                        if (bclick == True):
+                            bclick = False
 
                     print(f'Dist= {distancia_derecho}, blick={bclick}')
                     if((xmano<= xmano_ant-b) | (xmano>=xmano_ant+b)):
@@ -133,6 +145,8 @@ with mp_hands.Hands(
                     pyautogui.moveTo(int(xp),int(yp))
                     cv2.circle(output,(xmano_ant, ymano_ant),10,color_pointer,-1)
 
+
+#OTRA FUNCION CON DEDO MEÑIQUE
                 # The left hand will be able to set audio, brightness, etc
                 else:
                     # Volume up
