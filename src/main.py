@@ -2,34 +2,36 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import pyautogui
-mp_drawing = mp.solutions.drawing_utils
-mp_drawing_styles = mp.solutions.drawing_styles
-mp_hands = mp.solutions.hands
+from tkinter import *
+from tkinter import filedialog
+from PIL import Image
+from PIL import ImageTk
+import imutils
 
-cap = cv2.VideoCapture(0)
 
-color_pointer = (255,255,255)
-ANCHO_P=1920
-ALTO_P=1080
-RATIO=ANCHO_P/ALTO_P
-X=100
-Y=200
-xmano_ant=0
-ymano_ant=0
-b=3
+def hands_detection(frame):
+    mp_drawing = mp.solutions.drawing_utils
+    mp_drawing_styles = mp.solutions.drawing_styles
+    mp_hands = mp.solutions.hands
 
-bclick = False
+    color_pointer = (255,255,255)
+    ANCHO_P=1920
+    ALTO_P=1080
+    RATIO=ANCHO_P/ALTO_P
+    X=100
+    Y=200
+    xmano_ant=0
+    ymano_ant=0
+    b=3
 
-pyautogui.FAILSAFE=False
+    bclick = False
 
-with mp_hands.Hands(
-    static_image_mode=False,
-    max_num_hands=1,
-    min_detection_confidence=0.5) as hands:
-    while True:
-        ret, frame = cap.read()
-        if ret == False:
-            break
+    pyautogui.FAILSAFE=False
+
+    with mp_hands.Hands(
+        static_image_mode=False,
+        max_num_hands=1,
+        min_detection_confidence=0.5) as hands:
         height, width, _ = frame.shape
         frame = cv2.flip(frame, 1)
 
@@ -99,8 +101,6 @@ with mp_hands.Hands(
                         bclick = False
 
 
-
-
                 print(f'Dist= {distancia_derecho}, blick={bclick}')
                 if((xmano<= xmano_ant-b) | (xmano>=xmano_ant+b)):
                     xmano_ant = xmano
@@ -110,8 +110,63 @@ with mp_hands.Hands(
                 yp = np.interp(ymano_ant, (Y, Y + area_height), (0, ALTO_P))
                 pyautogui.moveTo(int(xp),int(yp))
                 cv2.circle(output,(xmano_ant, ymano_ant),10,color_pointer,-1)
-        cv2.imshow('Frame2', output)
-        if cv2.waitKey(1) & 0xFF == 27:
-            break
-cap.release()
-cv2.destroyAllWindows()
+            #cv2.imshow('Frame2', output)
+            #display_image(output)
+            #if cv2.waitKey(1) & 0xFF == 27:
+            #    break
+
+
+def visualizar(lblVideo):
+    global cap
+    if cap is not None:
+        ret, frame = cap.read()
+        if ret == True:
+            frame = imutils.resize(frame,width=640)
+            hands_detection(frame)
+            frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+            im = Image.fromarray(frame)
+            img = ImageTk.PhotoImage(image=im)
+            lblVideo.configure(image=img)
+            lblVideo.image = img
+            lblVideo.after(10,lambda : visualizar(lblVideo))
+        else:
+            lblVideo.image = ""
+            cap.release()
+
+
+
+def iniciar(lblVideo):
+    global cap
+    cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+    visualizar(lblVideo)
+
+def finalizar():
+    global cap
+    cap.release()
+
+def main():
+    # Start user interface
+    root = Tk()
+
+    # Video
+    lblVideo = Label(root)
+    lblVideo.grid(column=1,row=1,columnspan=2)
+
+    # Create a botton to start the application
+    btn = Button(root, text="Iniciar", width=25, command=lambda: iniciar(lblVideo))
+    btn.grid(column=0,row=0,padx=5,pady=5)
+
+    # Create a button to finish the application
+    btnFinalizar = Button(root, text="Finalizar", width=45, command=finalizar)
+    btnFinalizar.grid(column=1,row=0,padx=5,pady=5)
+
+    # Create an event loop
+    root.mainloop()
+
+    # Destroy all
+    cap.release()
+    cv2.destroyAllWindows()
+
+
+if __name__=="__main__":
+    main()
