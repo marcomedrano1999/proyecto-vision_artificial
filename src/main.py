@@ -135,30 +135,53 @@ def visualizar(lblVideo):
 
 
 
-def iniciar(lblVideo):
+def iniciar():
     global cap
-    cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
-    visualizar(lblVideo)
+    global counter
+    if counter < 1:
+        counter+=1
+        cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+        # Video
+        video = Toplevel()
+        lblVideo = Label(video)
+        lblVideo.grid(column=0,row=0,columnspan=2)
+        visualizar(lblVideo)
 
 def finalizar():
     global cap
-    cap.release()
+    if cap is not None:
+        cap.release()
+    exit(0)
 
 def main():
-    # Start user interface
-    root = Tk()
+    global cap
+    cap = None
+    global counter
+    counter = 0
 
-    # Video
-    lblVideo = Label(root)
-    lblVideo.grid(column=1,row=1,columnspan=2)
+    # Start main frame
+    root = Tk()
+    root.title('Handless mouse')
+    root.iconphoto(False, PhotoImage(file='./images/icon.png'))
+    root.geometry('400x300+700+200')
+    root.configure(bg='black')
+
+    # Image
+    m_im = Image.open("./images/hand.jpg")
+    m_im = m_im.resize((300,250), Image.ANTIALIAS)
+    m_image = ImageTk.PhotoImage(m_im)
+    main_image = Label(root, image=m_image)
+    main_image.grid(column=0, row=0, columnspan=2)
+    main_image.image = m_image
+
 
     # Create a botton to start the application
-    btn = Button(root, text="Iniciar", width=25, command=lambda: iniciar(lblVideo))
-    btn.grid(column=0,row=0,padx=5,pady=5)
+    btn = Button(root, text="Iniciar", width=25, command=iniciar, bg='white')
+    btn.grid(column=0,row=1,padx=5,pady=5)
 
     # Create a button to finish the application
-    btnFinalizar = Button(root, text="Finalizar", width=45, command=finalizar)
-    btnFinalizar.grid(column=1,row=0,padx=5,pady=5)
+    btnFinalizar = Button(root, text="Finalizar", width=25, command=finalizar, bg='white')
+    btnFinalizar.grid(column=1,row=1,padx=5,pady=5)
 
     # Create an event loop
     root.mainloop()
