@@ -255,12 +255,12 @@ def main():
     # Start main frame
     root = Tk()
     root.title('Handless mouse')
-    root.iconphoto(False, PhotoImage(file='./images/icon.png'))
+    root.iconphoto(False, PhotoImage(file='./icons/icon.png'))
     root.geometry('400x300+700+200')
     root.configure(bg='black')
 
     # Image
-    m_im = Image.open("./images/hand.jpg")
+    m_im = Image.open("./icons/hand.jpg")
     m_im = m_im.resize((300,250), Image.ANTIALIAS)
     m_image = ImageTk.PhotoImage(m_im)
     main_image = Label(root, image=m_image)
