@@ -16,6 +16,8 @@ import imutils
 
 def hands_detection(frame):
     global bclick
+    global xp, yp
+    global xclick_menique, yclick_menique
     mp_drawing = mp.solutions.drawing_utils
     mp_drawing_styles = mp.solutions.drawing_styles
     mp_hands = mp.solutions.hands
@@ -83,125 +85,121 @@ def hands_detection(frame):
                 ymenique = int(hand_landmarks.landmark[20].y * height)
 
                 #MEDICIONES ENTRE BASE Y DEDO
-                xclick = xbase-xindice
-                yclick = ybase-yindice
+                xclick_indice = xbase-xindice
+                yclick_indice = ybase-yindice
                 xclick_medio = xbase - xmedio
                 yclick_medio = ybase - ymedio
-                xclick_derecho = xbase - xanular
-                yclick_derecho = ybase - yanular
                 xclick_menique = xbase - xmenique
                 yclick_menique = ybase - ymenique
-                xclick_anualar = xbase - xanular
+                xclick_anular = xbase - xanular
                 yclick_anular = ybase - yanular
 
 
 
-                distancia_izquierdo= int((xclick**2 + yclick**2)**(1/2))
+                distancia_indice = int((xclick_indice**2 + yclick_indice**2)**(1/2))
                 distancia_medio = int((xclick_medio ** 2 + yclick_medio ** 2) ** (1 / 2))
-                distancia_derecho = int((xclick_derecho ** 2 + yclick_derecho ** 2) ** (1 / 2))
+                distancia_anular = int((xclick_anular ** 2 + yclick_anular ** 2) ** (1 / 2))
                 distancia_menique = int((xclick_menique ** 2 + yclick_menique ** 2)** (1 / 2))
-                distancia_anular = int((xclick_anualar ** 2 + yclick_anular ** 2)** (1 / 2))
                 
+                # Move mouse pointer with both hands
+                if((xmano<= xmano_ant-b) | (xmano>=xmano_ant+b)):
+                    xmano_ant = xmano
+                if ((ymano <= ymano_ant - b) | (ymano >= ymano_ant + b)):
+                    ymano_ant = ymano
+                xp = np.interp(xmano_ant, (X,X+ area_width), (0,ANCHO_P))
+                yp = np.interp(ymano_ant, (Y, Y + area_height), (0, ALTO_P))
+                pyautogui.moveTo(int(xp),int(yp))
+
                 # The right hand will have the mouse options
                 if(type_hand == 'Right'):
-                    #CLICK IZQUIERDO
-                    if(distancia_izquierdo<=50):
-                        if(bclick==False):
+                    # Left click
+                    if(distancia_indice<=50):
+                        if(bclick[0]==False):
                             print("Click")
                             pyautogui.leftClick()
-                            bclick=True
-                        #bclick=True
-                    if(distancia_izquierdo>=60):
-                        if(bclick==True):
-                            bclick=False
-                    if (distancia_derecho<=50):
-                        if (bclick == False):
-                            print("Click")
-                            pyautogui.rightClick()
-                            bclick = True
-                        # bclick=True
-                    if (distancia_derecho>=60):
-                        if (bclick == True):
-                            bclick = False
+                            bclick[0]=True
+                    if(distancia_indice>=60):
+                        if(bclick[0]==True):
+                            bclick[0]=False
+                    # Middle click
                     if (distancia_medio<=50):
-                        if (bclick == False):
+                        if (bclick[1] == False):
                             print("Click")
                             pyautogui.middleClick()
-                            bclick = True
-                        # bclick=True
+                            bclick[1] = True
                     if (distancia_medio>=60):
-                        if (bclick == True):
-                            bclick = False
+                        if (bclick[1] == True):
+                            bclick[1] = False
+                    # Right click
+                    if (distancia_anular<=50):
+                        if (bclick[2] == False):
+                            print("Click")
+                            pyautogui.rightClick()
+                            bclick[2] = True
+                    if (distancia_anular>=60):
+                        if (bclick[2] == True):
+                            bclick[2] = False
+                    # Drag 
                     if (distancia_menique<=50):
-                        if (bclick == False):
+                        if (bclick[3] == False):
                             print("Arrastrar")
-                            pyautogui.mouseDown()
-                            pyautogui.moveTo(xclick_menique, yclick_menique)    
-                            bclick = True
-                        # bclick=True
+                            pyautogui.mouseDown()    
+                            bclick[3] = True
+                        else:
+                            pyautogui.moveTo(xp, yp)
                     if (distancia_menique>=60):
-                        if (bclick == True):
+                        if (bclick[3] == True):
                             pyautogui.mouseUp()
-                            bclick = False
-
-                    print(f'Dist= {distancia_derecho}, blick={bclick}')
-                    if((xmano<= xmano_ant-b) | (xmano>=xmano_ant+b)):
-                        xmano_ant = xmano
-                    if ((ymano <= ymano_ant - b) | (ymano >= ymano_ant + b)):
-                        ymano_ant = ymano
-                    xp = np.interp(xmano_ant, (X,X+ area_width), (0,ANCHO_P))
-                    yp = np.interp(ymano_ant, (Y, Y + area_height), (0, ALTO_P))
-                    pyautogui.moveTo(int(xp),int(yp))
-                    cv2.circle(output,(xmano_ant, ymano_ant),10,color_pointer,-1)
-
+                            bclick[3] = False
                 # The left hand will be able to set audio, brightness, etc
                 else:
                     # Volume up
-                    if(distancia_izquierdo<=50):
-                        if(bclick==False):
+                    if(distancia_indice<=30):
+                        if(bclick[0]==False):
                             print("Volume up")
                             pyautogui.press("volumeup")
-                            bclick=True
-                    if(distancia_izquierdo>=60):
-                        if(bclick==True):
-                            bclick=False
-                    # Volume down
-                    if (distancia_derecho<=50):
-                        if (bclick == False):
-                            print("Volume down")
-                            pyautogui.press("volumedown")
-                            bclick = True
-                    if (distancia_derecho>=60):
-                        if (bclick == True):
-                            bclick = False
-                    #Texto rápido
-                    if (distancia_menique<=50):
-                        if (bclick == False):
-                            print("Texto")
-                            pyautogui.typewrite("No puedo contestar por el momento, te marco cuanto me desocupe")
-                            bclick = True
-                    if (distancia_menique>=60):
-                        if (bclick == True):
-                            bclick = False
+                            bclick[0]=True
+                    if(distancia_indice>=40):
+                        if(bclick[0]==True):
+                            bclick[0]=False
                     # Screenshot
                     #   image will be save in Images folder, under the present
                     #   hour time name
                     if (distancia_medio<=50):
-                       if (bclick == False):
+                       if (bclick[1] == False):
                             print("Screenshot")
                             now = datetime.now()
                             print(now.strftime("%d-%m-%Y_%H-%M-%S"))
                             image_name = folder+"/"+now.strftime("%d-%m-%Y_%H-%M-%S")+".png"
                             pyautogui.screenshot(image_name)
-                            bclick = True
+                            bclick[1] = True
                     if (distancia_medio>=60):
-                        if (bclick == True):
-                            bclick = False
-                    print(f'Dist= {distancia_medio}, blick={bclick}')
+                        if (bclick[1] == True):
+                            bclick[1] = False
+                    # Volume down
+                    if (distancia_anular<=30):
+                        if (bclick[2] == False):
+                            print("Volume down")
+                            pyautogui.press("volumedown")
+                            bclick[2] = True
+                    if (distancia_anular>=40):
+                        if (bclick[2] == True):
+                            bclick[2] = False
+                    #Texto rápido
+                    if (distancia_menique<=50):
+                        if (bclick[3] == False):
+                            print("Texto")
+                            pyautogui.typewrite("No puedo contestar por el momento, te marco cuanto me desocupe")
+                            bclick[3] = True
+                    if (distancia_menique>=60):
+                        if (bclick[3] == True):
+                            bclick[3] = False
+                
 
 
 def visualizar(lblVideo):
     global cap
+    global xp, yp
     if cap is not None:
         ret, frame = cap.read()
         if ret == True:
@@ -212,7 +210,7 @@ def visualizar(lblVideo):
             img = ImageTk.PhotoImage(image=im)
             lblVideo.configure(image=img)
             lblVideo.image = img
-            lblVideo.after(10,lambda : visualizar(lblVideo))
+            lblVideo.after(1,lambda : visualizar(lblVideo))
         else:
             lblVideo.image = ""
             cap.release()
@@ -223,7 +221,10 @@ def iniciar():
     global cap
     global counter
     global bclick
-    bclick = False
+    global xp, yp
+    bclick = np.full((4,1), False)
+    xp = 0
+    yp = 0
     if counter < 1:
         counter+=1
         cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
