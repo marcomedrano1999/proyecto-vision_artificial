@@ -7,42 +7,37 @@ from datetime import datetime
 import os
 from os import path
 import time
+from tkinter import *
+from tkinter import filedialog
+from PIL import Image
+from PIL import ImageTk
+import imutils
 
-mp_drawing = mp.solutions.drawing_utils
-mp_drawing_styles = mp.solutions.drawing_styles
-mp_hands = mp.solutions.hands
 
-# Set folder name for screenshots
-folder = "./images"
+def hands_detection(frame):
+    global bclick
+    mp_drawing = mp.solutions.drawing_utils
+    mp_drawing_styles = mp.solutions.drawing_styles
+    mp_hands = mp.solutions.hands
 
-# Check if the folder containing the images exits. If not, create it
-if(not path.isdir(folder)):
-    os.mkdir(folder)
+    color_pointer = (255,255,255)
+    ANCHO_P=1920
+    ALTO_P=1080
+    RATIO=ANCHO_P/ALTO_P
+    X=100
+    Y=200
+    xmano_ant=0
+    ymano_ant=0
+    b=3
 
-cap = cv2.VideoCapture(0)
+    pyautogui.FAILSAFE=False
 
-color_pointer = (255,255,255)
-ANCHO_P=1920
-ALTO_P=1080
-RATIO=ANCHO_P/ALTO_P
-X=100
-Y=200
-xmano_ant=0
-ymano_ant=0
-b=3
+    with mp_hands.Hands(
+        static_image_mode=False,
+        max_num_hands=1,
+        min_detection_confidence=0.5) as hands:
 
-bclick = False
-
-pyautogui.FAILSAFE=False
-
-with mp_hands.Hands(
-    static_image_mode=False,
-    max_num_hands=1,
-    min_detection_confidence=0.5) as hands:
-    while True:
-        ret, frame = cap.read()
-        if ret == False:
-            break
+        
         height, width, _ = frame.shape
         frame = cv2.flip(frame, 1)
 
@@ -191,7 +186,7 @@ with mp_hands.Hands(
                     # Screenshot
                     #   image will be save in Images folder, under the present
                     #   hour time name
-                    if (distancia_medio<=20):
+                    if (distancia_medio<=50):
                        if (bclick == False):
                             print("Screenshot")
                             now = datetime.now()
@@ -202,8 +197,93 @@ with mp_hands.Hands(
                     if (distancia_medio>=60):
                         if (bclick == True):
                             bclick = False
-        cv2.imshow('Frame2', output)
-        if cv2.waitKey(1) & 0xFF == 27:
-            break
-cap.release()
-cv2.destroyAllWindows()
+                    print(f'Dist= {distancia_medio}, blick={bclick}')
+
+
+def visualizar(lblVideo):
+    global cap
+    if cap is not None:
+        ret, frame = cap.read()
+        if ret == True:
+            frame = imutils.resize(frame,width=640)
+            hands_detection(frame)
+            frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+            im = Image.fromarray(frame)
+            img = ImageTk.PhotoImage(image=im)
+            lblVideo.configure(image=img)
+            lblVideo.image = img
+            lblVideo.after(10,lambda : visualizar(lblVideo))
+        else:
+            lblVideo.image = ""
+            cap.release()
+
+
+
+def iniciar():
+    global cap
+    global counter
+    global bclick
+    bclick = False
+    if counter < 1:
+        counter+=1
+        cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
+        # Video
+        video = Toplevel()
+        lblVideo = Label(video)
+        lblVideo.grid(column=0,row=0,columnspan=2)
+        visualizar(lblVideo)
+
+def finalizar():
+    global cap
+    if cap is not None:
+        cap.release()
+    exit(0)
+
+def main():
+    global cap
+    cap = None
+    global counter
+    counter = 0
+    global folder
+    # Set folder name for screenshots
+    folder = "./images"
+
+    # Check if the folder containing the images exits. If not, create it
+    if(not path.isdir(folder)):
+        os.mkdir(folder)
+
+    # Start main frame
+    root = Tk()
+    root.title('Handless mouse')
+    root.iconphoto(False, PhotoImage(file='./images/icon.png'))
+    root.geometry('400x300+700+200')
+    root.configure(bg='black')
+
+    # Image
+    m_im = Image.open("./images/hand.jpg")
+    m_im = m_im.resize((300,250), Image.ANTIALIAS)
+    m_image = ImageTk.PhotoImage(m_im)
+    main_image = Label(root, image=m_image)
+    main_image.grid(column=0, row=0, columnspan=2)
+    main_image.image = m_image
+
+
+    # Create a botton to start the application
+    btn = Button(root, text="Iniciar", width=25, command=iniciar, bg='white')
+    btn.grid(column=0,row=1,padx=5,pady=5)
+
+    # Create a button to finish the application
+    btnFinalizar = Button(root, text="Finalizar", width=25, command=finalizar, bg='white')
+    btnFinalizar.grid(column=1,row=1,padx=5,pady=5)
+
+    # Create an event loop
+    root.mainloop()
+
+    # Destroy all
+    cap.release()
+    cv2.destroyAllWindows()
+
+
+if __name__=="__main__":
+    main()
+
