@@ -12,7 +12,7 @@ from tkinter import filedialog
 from PIL import Image
 from PIL import ImageTk
 import imutils
-
+import sys
 
 def hands_detection(frame):
     global bclick
@@ -238,7 +238,7 @@ def finalizar():
     global cap
     if cap is not None:
         cap.release()
-    exit(0)
+    sys.exit(0)
 
 def main():
     global cap
@@ -255,7 +255,7 @@ def main():
 
     # Start main frame
     root = Tk()
-    root.title('Handless mouse')
+    root.title('Hands-Free Mouse')
     root.iconphoto(False, PhotoImage(file='./icons/icon.png'))
     root.geometry('400x300+700+200')
     root.configure(bg='black')
